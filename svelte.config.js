@@ -83,7 +83,7 @@ const config = {
   onwarn: (warning, handler) => {
     // Fail the build on production if we have redundant words in the alt text
     //if (process.env.NODE_ENV === 'production' &&
-    //    warning.code === 'a11y-img-redundant-alt' &&
+    //    warning.code === 'a11y_img_redundant_alt' &&
     //    warning.message.includes('Screenreaders already announce')) {
     //  throw new Error(
     //    `Build failed: Image alt text contains redundant terms (${warning.filename})\n` +
@@ -92,7 +92,7 @@ const config = {
     //}
 
     // Omit the warning about redundant alt text if we are on development mode
-    if (warning.code === 'a11y-img-redundant-alt' &&
+    if (warning.code === 'a11y_img_redundant_alt' &&
         warning.message.includes('Screenreaders already announce')) {
       return;
     }

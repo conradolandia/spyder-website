@@ -1,4 +1,6 @@
 <script>
+  import { run } from 'svelte/legacy';
+
   import { _, json, waitLocale } from "svelte-i18n";
 
   import { page } from "$app/stores";
@@ -15,26 +17,32 @@
     mergeContributorData,
   } from "$lib/utils";
 
-  /** @type {import('./$types').PageData} */
-  export let data;
+  
+  /**
+   * @typedef {Object} Props
+   * @property {import('./$types').PageData} data
+   */
+
+  /** @type {Props} */
+  let { data } = $props();
 
   // Page metadata
-  let title, author, description, keywords;
+  let title = $state(), author = $state(), description = $state(), keywords = $state();
 
   // Page content
-  let pageIntro,
-    pageTitle,
-    currentTitle,
-    pastTitle,
-    remainingTitle,
-    remainingIntro;
+  let pageIntro = $state(),
+    pageTitle = $state(),
+    currentTitle = $state(),
+    pastTitle = $state(),
+    remainingTitle = $state(),
+    remainingIntro = $state();
 
   // Contributor data
-  let currentRawContributors, pastRawContributors;
-  let currentTranslatedContributors, pastTranslatedContributors;
-  let currentContributorsMap, pastContributorsMap;
-  let currentContributors, pastContributors, remainingContributors;
-  let updatedCurrent, updatedPast;
+  let currentRawContributors = $state(), pastRawContributors = $state();
+  let currentTranslatedContributors = $state(), pastTranslatedContributors = $state();
+  let currentContributorsMap = $state(), pastContributorsMap = $state();
+  let currentContributors = $state(), pastContributors = $state(), remainingContributors = $state();
+  let updatedCurrent = $state(), updatedPast = $state();
 
   // State
   let loading = false;
@@ -42,7 +50,7 @@
 
   const allContributors = data.contributors;
 
-  $: {
+  run(() => {
     // Load page metadata
     title = $_("config.site.title");
     author = $_("config.site.author");
@@ -103,7 +111,7 @@
       image,
       url: $page.url.href,
     });
-  }
+  });
 </script>
 
 {#await waitLocale()}

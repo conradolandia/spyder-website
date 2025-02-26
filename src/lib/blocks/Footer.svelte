@@ -1,16 +1,18 @@
 <script>
+  import { run } from 'svelte/legacy';
+
   import { _, waitLocale } from "svelte-i18n";
 
   import Loader from "$lib/components/Loader.svelte";
   import Divider from "$lib/components/Divider.svelte";
   import SocialIcons from "$lib/components/SocialIcons.svelte";
 
-  let footerTitle, footerContent;
+  let footerTitle = $state(), footerContent = $state();
 
-  $: {
+  run(() => {
     footerTitle = $_("config.site.footer.title");
     footerContent = $_("config.site.footer.content");
-  }
+  });
 </script>
 
 <!-- Footer -->

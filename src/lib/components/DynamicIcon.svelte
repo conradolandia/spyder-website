@@ -4,8 +4,14 @@
 
   import Loader from "./Loader.svelte";
 
-  export let icon;
-  export let size = "4rem";
+  /**
+   * @typedef {Object} Props
+   * @property {any} icon
+   * @property {string} [size]
+   */
+
+  /** @type {Props} */
+  let { icon, size = "4rem" } = $props();
 
   let iconPromise = getIcon(icon);
 </script>

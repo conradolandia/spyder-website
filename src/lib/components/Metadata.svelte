@@ -1,4 +1,6 @@
 <script>
+  import { run } from 'svelte/legacy';
+
     import { _, locale } from "svelte-i18n";
 
     import { base } from "$app/paths";
@@ -6,16 +8,22 @@
     import { metadata } from "$lib/store";
     import { siteUrl, config } from "$lib/config";
 
-    let site, title, socials, localeCode;
+    let site = $state(), title, socials = $state(), localeCode = $state();
     const untrailedUrl = $metadata.url.replace(/\/+$/, '');
 
-    $: {
+    run(() => {
       socials = config.site.socials;
       site = `@${socials.twitter.split("/").pop()}`;
       localeCode = $locale.replace('-', '_');
-    }
+    });
 
-    export let prism = false;
+  /**
+   * @typedef {Object} Props
+   * @property {boolean} [prism]
+   */
+
+  /** @type {Props} */
+  let { prism = false } = $props();
 </script>
 
 <svelte:head>

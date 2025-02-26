@@ -2,10 +2,21 @@
   import DynamicIcon from "$lib/components/DynamicIcon.svelte";
   import Image from "$lib/components/Image.svelte";
 
-  export let innerColumn;
-  export let aspect = "";
-  export let classes = "";
-  export let size = 48;
+  /**
+   * @typedef {Object} Props
+   * @property {any} innerColumn
+   * @property {string} [aspect]
+   * @property {string} [classes]
+   * @property {number} [size]
+   */
+
+  /** @type {Props} */
+  let {
+    innerColumn,
+    aspect = "",
+    classes = "",
+    size = 48
+  } = $props();
 </script>
 
 <div

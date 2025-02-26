@@ -11,22 +11,36 @@
   import Metadata from "$lib/components/Metadata.svelte";
 
   /** @type {import('./$types').PageData} */
-  // svelte-ignore unused-export-let
-  export let data;
-  // svelte-ignore unused-export-let
-  export let form;
+  
+  /**
+   * @typedef {Object} Props
+   * @property {any} data - svelte-ignore unused-export-let
+   * @property {any} form - svelte-ignore unused-export-let
+   * @property {any} title - Props from markdown
+   * @property {any} pub_date
+   * @property {any} author
+   * @property {any} tags
+   * @property {any} category
+   * @property {any} summary
+   * @property {import('svelte').Snippet} [children]
+   */
 
-  // Props from markdown
-  export let title;
-  export let pub_date;
-  export let author;
-  export let tags;
-  export let category;
-  export let summary;
+  /** @type {Props} */
+  let {
+    data,
+    form,
+    title,
+    pub_date,
+    author,
+    tags,
+    category,
+    summary,
+    children
+  } = $props();
 
   // Initialize variables
-  let siteTitle;
-  let authorsMetadata = [];
+  let siteTitle = $state();
+  let authorsMetadata = $state([]);
 
   const slug = $page.url.pathname.replace(`/blog`, '').replaceAll('/', '');
   const customOgImagePath = `${siteUrl}/assets/og/${slug}.png`;
@@ -36,7 +50,7 @@
     authorsMetadata = await fetchAuthorsMetadata(postAuthors);
   });
 
-  $: {
+  $effect(() => {
     siteTitle = $_('config.site.title');
     metadata.setMetadata({
       title: `${siteTitle} | ${title}`,
@@ -46,7 +60,7 @@
       url: $page.url.href,
       image: customOgImagePath || ogImageBlog,
     });
-  }
+  });
 
 </script>
 
@@ -100,6 +114,8 @@
     max-w-[72ch]
     mx-auto"
   >
-    <slot />
+    {#if children}
+      {@render children()}
+    {/if}
   </div>
 </article>

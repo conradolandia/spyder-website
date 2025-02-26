@@ -1,5 +1,11 @@
 <script>
-  export let classes = '';
+  /**
+   * @typedef {Object} Props
+   * @property {string} [classes]
+   */
+
+  /** @type {Props} */
+  let { classes = '' } = $props();
 </script>
 
 <svg

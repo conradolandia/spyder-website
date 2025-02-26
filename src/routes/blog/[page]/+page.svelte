@@ -1,4 +1,6 @@
 <script>
+  import { run } from 'svelte/legacy';
+
   import { _, json } from "svelte-i18n"
 
   import { metadata } from "$lib/store";
@@ -6,12 +8,18 @@
 
   import BlogPage from "$lib/blocks/BlogPage.svelte";
 
-  /** @type {import('./$types').PageData} */
-  export let data;
+  
+  /**
+   * @typedef {Object} Props
+   * @property {import('./$types').PageData} data
+   */
 
-  let pageNum, totalPages, title, subtitle, description, keywords, author;
+  /** @type {Props} */
+  let { data } = $props();
 
-  $: {
+  let pageNum = $state(), totalPages = $state(), title = $state(), subtitle = $state(), description = $state(), keywords = $state(), author = $state();
+
+  run(() => {
     pageNum = data.props.pageNum;
     totalPages = data.props.totalPages;
     title = $_('config.site.title');
@@ -28,7 +36,7 @@
       url: siteUrl,
       image: ogImageBlog,
     });
-  }
+  });
 </script>
 
 <BlogPage {data} />

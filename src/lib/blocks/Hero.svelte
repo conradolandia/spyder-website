@@ -9,42 +9,89 @@
   import Button from "$lib/components/Button.svelte";
   import ImageCompare from "$lib/components/ImageCompare.svelte";
   import Divider from "$lib/components/Divider.svelte";
+  import Loader from "$lib/components/Loader.svelte";
 
-  export let id = "";
-  export let classes = "";
-  export let divider = false;
+  let {
+    id = "",
+    classes = "",
+    divider = false,
+    buttons = $bindable([])
+  } = $props();
 
-  // Hero section buttons
-  export let buttons = [];
+  // Initialize with empty objects to prevent undefined errors
+  let heroContent = $state({ title: "", description: "" });
+  let heroImages = $state({ dark: "", light: "" });
+  let githubButton = $state({});
+  let githubButtonTranslation = $state({});
+  let translatedGithubButton = $state({});
+  let unsubscribeOs = $state();
+  let dataLoaded = $state(false);
+  let showImageCompare = $state(true);
 
-  let heroContent,
-    heroImages,
-    githubButton,
-    githubButtonTranslation,
-    translatedGithubButton,
-    unsubscribeOs;
+  // Load content data
+  $effect(() => {
+    try {
+      // Get hero content
+      heroContent = $json("config.site.heroContent") || { title: "", description: "" };
+      
+      // Get hero images
+      if (config.site && config.site.heroImages) {
+        heroImages = {
+          dark: config.site.heroImages.dark || "",
+          light: config.site.heroImages.light || ""
+        };
+      }
+      
+      // Get GitHub button
+      if (config.site && config.site.githubButton) {
+        githubButton = config.site.githubButton;
+        githubButtonTranslation = $json("config.site.githubButton") || {};
+        translatedGithubButton = { ...githubButton, ...githubButtonTranslation };
+      }
 
-  $: {
-    heroContent = $json("config.site.heroContent") || "";
-    heroImages = config.site.heroImages || {};
-    githubButton = config.site.githubButton || {};
-    githubButtonTranslation = $json("config.site.githubButton") || {};
-    translatedGithubButton = { ...githubButton, ...githubButtonTranslation };
+      // Mark data as loaded
+      dataLoaded = true;
+    } catch (error) {
+      console.error("Error loading hero content:", error);
+      dataLoaded = true; // Still mark as loaded to avoid infinite loading
+    }
+  });
 
-    // Subscribe to osStore
+  // Handle OS store subscription
+  $effect(() => {
     unsubscribeOs = osStore.subscribe((data) => {
       if (!data.loading && !$isLoading) {
-        const translatedOsButtons = data.osButtons.map((button) => ({
-          ...button,
-          text: `${$_("download.button.message")} ${button.text}`,
-        }));
-        buttons = [...translatedOsButtons, translatedGithubButton];
+        try {
+          const translatedOsButtons = data.osButtons.map((button) => ({
+            ...button,
+            text: `${$_("download.button.message")} ${button.text}`,
+          }));
+          buttons = [...translatedOsButtons, translatedGithubButton];
+        } catch (error) {
+          console.error("Error processing OS buttons:", error);
+        }
       }
     });
+  });
+
+  // Add error handling for image compare
+  function handleImageError() {
+    console.error("Error with image compare component");
+    showImageCompare = false;
   }
 
   onMount(() => {
+    // Set a timeout to hide the image compare if it causes issues
+    const timeout = setTimeout(() => {
+      if (!dataLoaded) {
+        console.warn("Data loading timeout - hiding image compare");
+        showImageCompare = false;
+        dataLoaded = true;
+      }
+    }, 5000);
+
     return () => {
+      clearTimeout(timeout);
       if (unsubscribeOs) unsubscribeOs();
     };
   });
@@ -93,11 +140,59 @@
   </div>
 
   <div class="container aspect-video py-5 mt-16">
-    <ImageCompare before={heroImages.dark} after={heroImages.light} />
+    {#if dataLoaded && heroImages?.dark && heroImages?.light && showImageCompare}
+      <div class="image-compare-wrapper">
+        <ImageCompare 
+          before={heroImages.dark} 
+          after={heroImages.light} 
+          alt="Spyder IDE theme comparison"
+        />
+      </div>
+    {:else if !dataLoaded}
+      <div class="loader-wrapper flex items-center justify-center h-full">
+        <Loader />
+      </div>
+    {:else}
+      <!-- Fallback to simple images if the compare component fails -->
+      <div class="fallback-images grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="fallback-image">
+          <img 
+            src={heroImages?.dark || ""} 
+            alt="Spyder IDE dark theme" 
+            class="rounded-lg shadow-lg w-full h-auto"
+          />
+          <p class="text-center mt-2 text-sm">Dark Theme</p>
+        </div>
+        <div class="fallback-image">
+          <img 
+            src={heroImages?.light || ""} 
+            alt="Spyder IDE light theme" 
+            class="rounded-lg shadow-lg w-full h-auto"
+          />
+          <p class="text-center mt-2 text-sm">Light Theme</p>
+        </div>
+      </div>
+    {/if}
   </div>
 
   {#if divider}
     <Divider stroke={true} />
   {/if}
 </section>
+
+<style>
+  .image-compare-wrapper {
+    width: 100%;
+    height: 100%;
+    min-height: 300px;
+  }
+  
+  .loader-wrapper {
+    min-height: 300px;
+  }
+  
+  .fallback-images {
+    min-height: 300px;
+  }
+</style>
 

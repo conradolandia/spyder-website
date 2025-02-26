@@ -1,9 +1,21 @@
 <script>
   import Button from "./Button.svelte";
 
-  export let content = "";
-  export let buttons = undefined;
-  export let columns = true;
+  /**
+   * @typedef {Object} Props
+   * @property {string} [content]
+   * @property {any} [buttons]
+   * @property {boolean} [columns]
+   * @property {import('svelte').Snippet} [children]
+   */
+
+  /** @type {Props} */
+  let {
+    content = "",
+    buttons = undefined,
+    columns = true,
+    children
+  } = $props();
 </script>
 
 <div class={columns ? "col-span-full lg:col-span-4" : "col-span-full"}>
@@ -15,7 +27,7 @@
         ${columns ? "max-w-full" : "mt-8 md:mt-24 text-center max-w-2xl mx-auto"}`}
     >
       {#if typeof content !== "object"}
-        <slot />
+        {@render children?.()}
       {:else}
         {#if content.title}
           {#if content.titleTag}

@@ -6,7 +6,7 @@
   import { Icon } from 'svelte-icons-pack';
   import { LuSun, LuMoon } from "svelte-icons-pack/lu";
 
-  let darkMode = get(colourScheme) === 'dark';
+  let darkMode = $state(get(colourScheme) === 'dark');
   let switchString = "Switch to light / dark version"
 
   const switchMode = () => {
@@ -49,7 +49,7 @@
 
 <div class="inline-flex justify-center items-center">
   <input
-    on:click={switchMode}
+    onclick={switchMode}
     checked={darkMode}
     class="sr-only"
     type="checkbox"

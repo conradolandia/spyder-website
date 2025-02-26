@@ -5,18 +5,37 @@
   import Tabs from "./Tabs.svelte";
   import VideoPlayer from "./VideoPlayer.svelte";
 
-  export let columns = true;
-  export let videoId = "";
-  export let videoSources = undefined;
-  export let videoPoster = undefined;
-  export let imgSrc = undefined;
-  export let imgLink = "";
-  export let imgAlt = "";
-  export let imgClasses = "";
-  export let caption = "";
-  export let tabs = undefined;
-  export let innerColumns = false;
-  export let aspectRatio = "4:3";
+  /**
+   * @typedef {Object} Props
+   * @property {boolean} [columns]
+   * @property {string} [videoId]
+   * @property {any} [videoSources]
+   * @property {any} [videoPoster]
+   * @property {any} [imgSrc]
+   * @property {string} [imgLink]
+   * @property {string} [imgAlt]
+   * @property {string} [imgClasses]
+   * @property {string} [caption]
+   * @property {any} [tabs]
+   * @property {boolean} [innerColumns]
+   * @property {string} [aspectRatio]
+   */
+
+  /** @type {Props} */
+  let {
+    columns = true,
+    videoId = "",
+    videoSources = undefined,
+    videoPoster = undefined,
+    imgSrc = undefined,
+    imgLink = "",
+    imgAlt = "",
+    imgClasses = "",
+    caption = "",
+    tabs = undefined,
+    innerColumns = false,
+    aspectRatio = "4:3"
+  } = $props();
 </script>
 
 <div class={columns ? "col-span-full lg:col-span-6" : "col-span-full"}>

@@ -1,4 +1,6 @@
 <script>
+  import { run } from 'svelte/legacy';
+
   import { _, isLoading } from "svelte-i18n";
   import { onMount } from "svelte";
 
@@ -10,35 +12,69 @@
   import Divider from "$lib/components/Divider.svelte";
   import Image from "$lib/components/Image.svelte";
 
-  export let id = randomId();
-  export let columns = true;
-  export let border = false;
-  export let videoId = "";
-  export let videoSources = undefined;
-  export let videoPoster = undefined;
-  export let imgSrc = undefined;
-  export let imgLink = "";
-  export let imgClasses = "";
-  export let imgAlt = "";
-  export let caption = "";
-  export let tabs = undefined;
-  export let buttons = undefined;
-  export let boxed = false;
-  export let divider = false;
-  export let title = "";
-  export let classes = "";
-  export let background = "";
-  export let backgroundDark = "";
-  export let content = "";
-  export let extraContent = "";
-  export let extraImage = "";
-  export let extraImageAlt = "";
-  export let extraImageLink = "";
-  export let innerColumns = false;
+  /**
+   * @typedef {Object} Props
+   * @property {any} [id]
+   * @property {boolean} [columns]
+   * @property {boolean} [border]
+   * @property {string} [videoId]
+   * @property {any} [videoSources]
+   * @property {any} [videoPoster]
+   * @property {any} [imgSrc]
+   * @property {string} [imgLink]
+   * @property {string} [imgClasses]
+   * @property {string} [imgAlt]
+   * @property {string} [caption]
+   * @property {any} [tabs]
+   * @property {any} [buttons]
+   * @property {boolean} [boxed]
+   * @property {boolean} [divider]
+   * @property {string} [title]
+   * @property {string} [classes]
+   * @property {string} [background]
+   * @property {string} [backgroundDark]
+   * @property {string} [content]
+   * @property {string} [extraContent]
+   * @property {string} [extraImage]
+   * @property {string} [extraImageAlt]
+   * @property {string} [extraImageLink]
+   * @property {boolean} [innerColumns]
+   * @property {import('svelte').Snippet} [children]
+   */
 
-  let style = "";
-  let mobile = false;
-  let unsubscribeOs;
+  /** @type {Props} */
+  let {
+    id = randomId(),
+    columns = true,
+    border = false,
+    videoId = "",
+    videoSources = undefined,
+    videoPoster = undefined,
+    imgSrc = $bindable(undefined),
+    imgLink = "",
+    imgClasses = "",
+    imgAlt = "",
+    caption = "",
+    tabs = undefined,
+    buttons = $bindable(undefined),
+    boxed = false,
+    divider = false,
+    title = "",
+    classes = "",
+    background = "",
+    backgroundDark = "",
+    content = "",
+    extraContent = "",
+    extraImage = "",
+    extraImageAlt = "",
+    extraImageLink = "",
+    innerColumns = false,
+    children
+  } = $props();
+
+  let style = $state("");
+  let mobile = $state(false);
+  let unsubscribeOs = $state();
   let resizeHandler;
 
   const debounce = (func, wait) => {
@@ -53,28 +89,32 @@
     };
   };
 
-  $: currentBg =
-    $colourScheme === "dark" && backgroundDark ? backgroundDark : background;
+  let currentBg =
+    $derived($colourScheme === "dark" && backgroundDark ? backgroundDark : background);
 
-  $: style =
-    mobile && !currentBg
-      ? ""
-      : currentBg
-        ? `background-image: url(${currentBg});`
-        : "";
+  run(() => {
+    style =
+      mobile && !currentBg
+        ? ""
+        : currentBg
+          ? `background-image: url(${currentBg});`
+          : "";
+  });
 
-  $: if (buttons && imgSrc) {
-    unsubscribeOs = osStore.subscribe((data) => {
-      if (!data.loading && !$isLoading) {
-        const translatedOsButtons = data.osButtons.map((button) => ({
-          ...button,
-          text: `${$_("download.button.message")} ${button.text}`,
-        }));
-        buttons = [...translatedOsButtons];
-        imgSrc = `/assets/media/${data.os}.webp`;
-      }
-    });
-  }
+  run(() => {
+    if (buttons && imgSrc) {
+      unsubscribeOs = osStore.subscribe((data) => {
+        if (!data.loading && !$isLoading) {
+          const translatedOsButtons = data.osButtons.map((button) => ({
+            ...button,
+            text: `${$_("download.button.message")} ${button.text}`,
+          }));
+          buttons = [...translatedOsButtons];
+          imgSrc = `/assets/media/${data.os}.webp`;
+        }
+      });
+    }
+  });
 
   onMount(() => {
     resizeHandler = debounce(() => {
@@ -113,7 +153,7 @@
   >
     {#if content || buttons}
       <ContentSection {content} {buttons} {columns}>
-        <slot />
+        {@render children?.()}
       </ContentSection>
     {/if}
 
@@ -143,7 +183,8 @@
     >
       {#if typeof extraContent !== "object"}
         {#if extraContent}
-          <svelte:component this={null} />
+          {@const SvelteComponent = null}
+          <SvelteComponent />
         {/if}
       {:else}
         {#if extraContent.title}

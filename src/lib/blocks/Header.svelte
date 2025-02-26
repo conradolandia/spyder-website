@@ -16,17 +16,17 @@
   import ColourSwitch from "$lib/components/ColourSwitch.svelte";
   import LanguageSelect from "$lib/components/LanguageSelect.svelte";
 
-  let isMenuOpen = false;
+  let isMenuOpen = $state(false);
   const mainNav = config.site.navigation || [];
 
   // Create reactive navigation that updates when translations change
-  $: translatedNav = $json("config.site.navigation") || [];
-  $: navigation = mainNav.map((menuGroup, groupIndex) =>
+  let translatedNav = $derived($json("config.site.navigation") || []);
+  let navigation = $derived(mainNav.map((menuGroup, groupIndex) =>
     menuGroup.map((item, itemIndex) => ({
       ...item,
       text: translatedNav[groupIndex]?.[itemIndex]?.text || "No valid text",
     })),
-  );
+  ));
 
   function toggleMenu() {
     isMenuOpen = !isMenuOpen;
@@ -78,7 +78,7 @@
         <!-- Hamburger menu button (visible on mobile) -->
         <button
           class="md:hidden"
-          on:click={toggleMenu}
+          onclick={toggleMenu}
           aria-label="Toggle menu"
         >
           <Icon src={BiMenu} size="24" />
@@ -93,7 +93,7 @@
       class="md:hidden fixed inset-0 z-50 bg-spring-wood-50 text-gray-700 dark:bg-mine-shaft-950 dark:text-spring-wood-50"
     >
       <div class="container py-5 text-right">
-        <button class="mb-8 pt-2" on:click={toggleMenu} aria-label="Close menu">
+        <button class="mb-8 pt-2" onclick={toggleMenu} aria-label="Close menu">
           <Icon src={AiOutlineClose} size="24" />
         </button>
         <nav class="text-center">
@@ -106,7 +106,7 @@
                     class:text-red-berry-900={$page.url.pathname === item.href}
                     href={item.href}
                     target={item.target}
-                    on:click={toggleMenu}>{item.text}</a
+                    onclick={toggleMenu}>{item.text}</a
                   >
                 </li>
               {/each}

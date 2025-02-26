@@ -4,9 +4,7 @@
   import { base } from "$app/paths";
   import Button from "./Button.svelte";
 
-  export let pageNum;
-  export let totalPages;
-  export let route;
+  let { pageNum, totalPages, route } = $props();
 </script>
 
 <nav class="flex items-center justify-evenly m-16">
@@ -14,7 +12,7 @@
     <Button
       icon="chevronLeft"
       href="{base}/{route}/{pageNum - 1}"
-      text="{$_('config.blog.previous')}"
+      text={$_('config.blog.previous')}
       iconPosition="left"
       highlight={true}
     />
@@ -23,7 +21,7 @@
     <Button
       icon="chevronRight"
       href="{base}/{route}/{pageNum + 1}"
-      text="{$_('config.blog.next')}"
+      text={$_('config.blog.next')}
       iconPosition="right"
       highlight={true}
     />

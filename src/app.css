@@ -8,11 +8,11 @@
 
 /* General styling */
 a:not(.menu-link):not(.icon-link):not(.button):not(.post-link):not(.card-link) {
-  @apply text-red-berry-900 dark:text-white underline underline-offset-2
+  @apply text-red-berry-900 dark:text-white underline underline-offset-2;
 }
 
 a:not(.menu-link):not(.icon-link):not(.button):not(.post-link):not(.card-link):hover {
-  @apply text-mine-shaft-900 dark:text-quill-gray-400
+  @apply text-mine-shaft-900 dark:text-quill-gray-400;
 }
 
 .figure {

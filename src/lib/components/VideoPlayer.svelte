@@ -1,4 +1,6 @@
 <script lang="ts">
+  // import { run, preventDefault, stopPropagation } from 'svelte/legacy';
+
   import { onMount, onDestroy, createEventDispatcher } from "svelte";
   import { Icon } from "svelte-icons-pack";
   import { BsPlayCircleFill, BsPauseCircleFill } from "svelte-icons-pack/bs";
@@ -12,31 +14,53 @@
     load: void;
   }>();
 
-  // Props
-  export let videoSources: VideoSource[] = [];
-  export let videoPoster = "";
-  export let progress = true;
-  export let info = true;
-  export let aspectRatio = "4:3"; // Default aspect ratio
+  
+  interface Props {
+    // Props
+    videoSources?: VideoSource[];
+    videoPoster?: string;
+    progress?: boolean;
+    info?: boolean;
+    aspectRatio?: string; // Default aspect ratio
+  }
+
+  let {
+    videoSources = [],
+    videoPoster = "",
+    progress = true,
+    info = true,
+    aspectRatio = "4:3"
+  }: Props = $props();
 
   // State
-  let time = 0;
+  let time = $state(0);
   let autoplay = false;
-  let userPaused = false;
-  let paused = true;
-  let duration: number | undefined;
-  let showControls = false;
-  let showControlsTimeout: ReturnType<typeof setTimeout>;
-  let videoElement: HTMLVideoElement;
+  let userPaused = $state(false);
+  let paused = $state(true);
+  let duration: number | undefined = $state();
+  let showControls = $state(false);
+  let showControlsTimeout: ReturnType<typeof setTimeout> = $state();
+  let videoElement: HTMLVideoElement = $state();
   let observer: IntersectionObserver;
-  let isVideoReady = false;
+  let isVideoReady = $state(false);
   let lastMouseDown: Date;
 
   // Computed values
-  $: aspectRatioPadding = (() => {
+  let aspectRatioPadding = $derived((() => {
     const [width, height] = aspectRatio.split(':').map(Number);
     return (height / width * 100) + '%';
-  })();
+  })());
+
+  // Funciones de utilidad para el manejo de eventos
+  const preventDefault = (fn) => (event) => {
+    event.preventDefault();
+    return fn(event);
+  };
+  
+  const stopPropagation = (fn) => (event) => {
+    event.stopPropagation();
+    return fn(event);
+  };
 
   // Event handlers
   const handleIntersection = (entries: IntersectionObserverEntry[]) => {
@@ -134,18 +158,24 @@
   });
 
   // Reactive statements
-  $: if (videoSources) {
-    isVideoReady = false;
-  }
+  $effect(() => {
+    if (videoSources) {
+      isVideoReady = false;
+    }
+  });
 
-  $: if (userPaused) {
-    showControls = true;
-    clearTimeout(showControlsTimeout);
-  }
+  $effect(() => {
+    if (userPaused) {
+      showControls = true;
+      clearTimeout(showControlsTimeout);
+    }
+  });
 
-  $: if (duration) {
-    handleVideoReady();
-  }
+  $effect(() => {
+    if (duration) {
+      handleVideoReady();
+    }
+  });
 </script>
 
 {#if videoSources.length > 0}
@@ -159,15 +189,15 @@
         playsinline
         preload="auto"
         poster={videoPoster}
-        on:mousemove={handleMove}
-        on:touchmove|preventDefault={handleMove}
-        on:mousedown={handleMousedown}
-        on:mouseup={handleMouseup}
-        on:loadedmetadata={handleVideoReady}
-        on:loadeddata={handleVideoReady}
-        on:canplay={handleVideoReady}
-        on:canplaythrough={handleVideoReady}
-        on:ended={() => {
+        onmousemove={handleMove}
+        ontouchmove={preventDefault(handleMove)}
+        onmousedown={handleMousedown}
+        onmouseup={handleMouseup}
+        onloadedmetadata={handleVideoReady}
+        onloadeddata={handleVideoReady}
+        oncanplay={handleVideoReady}
+        oncanplaythrough={handleVideoReady}
+        onended={() => {
           userPaused = false;
         }}
         bind:currentTime={time}
@@ -181,20 +211,20 @@
         {/each}
       </video>
 
-      <!-- svelte-ignore a11y-click-events-have-key-events -->
+      <!-- svelte-ignore a11y_click_events_have_key_events -->
       <div
         role="button"
         tabindex="0"
         class="controls"
         style="opacity: {duration && showControls ? 1 : 0}"
-        on:mousemove|stopPropagation={() => {
+        onmousemove={stopPropagation(() => {
           showControls = true;
           clearTimeout(showControlsTimeout);
-        }}
+        })}
       >
         <button
           class="control-button"
-          on:click={() => {
+          onclick={() => {
             paused = !paused;
             userPaused = paused;
             showControls = true;
@@ -221,7 +251,7 @@
         {/if}
 
         {#if progress}
-          <progress class="progress-bar" value={time / (duration || 1)} />
+          <progress class="progress-bar" value={time / (duration || 1)}></progress>
         {/if}
       </div>
     </div>

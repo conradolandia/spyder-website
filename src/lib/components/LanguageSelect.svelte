@@ -5,10 +5,10 @@
 
   import { browser } from "$app/environment";
 
-  export let languages;
+  let { languages } = $props();
 
-  let isDropdownOpen = false;
-  let dropdownButton;
+  let isDropdownOpen = $state(false);
+  let dropdownButton = $state();
 
   function handleSelect(selectedLocale) {
     locale.set(selectedLocale);
@@ -32,16 +32,16 @@
     }
   }
 
-  $: iconClasses = isDropdownOpen ? `rotate-180` : ``;
+  let iconClasses = $derived(isDropdownOpen ? `rotate-180` : ``);
 </script>
 
-<svelte:window on:click={handleClickOutside} />
+<svelte:window onclick={handleClickOutside} />
 
 <div class="relative inline-block text-left">
   <button
     bind:this={dropdownButton}
     class="dropdownButton"
-    on:click={() => (isDropdownOpen = !isDropdownOpen)}
+    onclick={() => (isDropdownOpen = !isDropdownOpen)}
   >
     {languages.find((lang) => lang.code === $locale)?.name || "English"}
     <Icon
@@ -60,7 +60,7 @@
               ? 'bg-spring-wood-100 dark:bg-mine-shaft-900'
               : ''}"
             role="menuitem"
-            on:click={() => handleSelect(code)}
+            onclick={() => handleSelect(code)}
           >
             {name}
           </button>

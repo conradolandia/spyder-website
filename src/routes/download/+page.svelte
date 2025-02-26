@@ -1,4 +1,6 @@
 <script>
+  import { run } from 'svelte/legacy';
+
   import { _, json } from "svelte-i18n";
   import { onMount } from "svelte";
 
@@ -21,18 +23,18 @@
   /** @typedef {Record<string, Record<string, ReleaseInfo>>} Releases */
 
   // State
-  let arch = "unknown";
-  let os = "unknown";
-  let osName = "unknown";
-  let macs = [];
-  let downloadUrl = "";
-  let osButtons = [];
-  let result;
+  let arch = $state("unknown");
+  let os = $state("unknown");
+  let osName = $state("unknown");
+  let macs = $state([]);
+  let downloadUrl = $state("");
+  let osButtons = $state([]);
+  let result = $state();
 
   // Page content
-  let title, description, author, keywords;
-  let pageTitle, pageSubtitle, pageSubtitleAlt;
-  let download, buttonText;
+  let title = $state(), description = $state(), author = $state(), keywords = $state();
+  let pageTitle = $state(), pageSubtitle = $state(), pageSubtitleAlt = $state();
+  let download = $state(), buttonText = $state();
 
   /**
    * Generate download buttons for all available releases
@@ -105,7 +107,7 @@
     osButtons = generateDownloadButtons(releases);
   });
 
-  $: {
+  run(() => {
     // Update download info
     osName = releases?.[os]?.[arch]?.name ?? "";
     downloadUrl = releases?.[os]?.[arch]?.link ?? "";
@@ -135,7 +137,7 @@
     if (releases?.mac) {
       macs = Object.entries(releases.mac);
     }
-  }
+  });
 </script>
 
 <Metadata />

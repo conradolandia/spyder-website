@@ -1,6 +1,12 @@
 <script>
-  export let classes = "";
-  export let stroke = false;
+  /**
+   * @typedef {Object} Props
+   * @property {string} [classes]
+   * @property {boolean} [stroke]
+   */
+
+  /** @type {Props} */
+  let { classes = "", stroke = false } = $props();
 </script>
 
 <div class="full overflow-hidden block h-14" class:mt-14={stroke}>

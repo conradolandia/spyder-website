@@ -5,7 +5,7 @@
   import Button from "$lib/components/Button.svelte";
   import Loader from "$lib/components/Loader.svelte";
 
-  let socials, socialIcons;
+  let socials = $state(), socialIcons = $state();
 
   onMount(() => {
     socials = config.site.socials;

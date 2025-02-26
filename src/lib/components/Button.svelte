@@ -29,18 +29,37 @@
     windows: BsWindows,
   };
 
-  export let button = true;
-  export let highlight = false;
-  export let icon = "";
-  export let iconSize = 24;
-  export let href = "";
-  export let rel = "";
-  export let text = "";
-  export let title = text;
-  export let target = "_parent";
-  export let iconPosition = "right";
-  export let fullwidth = false;
-  export let textSize = "";
+  /**
+   * @typedef {Object} Props
+   * @property {boolean} [button]
+   * @property {boolean} [highlight]
+   * @property {string} [icon]
+   * @property {number} [iconSize]
+   * @property {string} [href]
+   * @property {string} [rel]
+   * @property {string} [text]
+   * @property {any} [title]
+   * @property {string} [target]
+   * @property {string} [iconPosition]
+   * @property {boolean} [fullwidth]
+   * @property {string} [textSize]
+   */
+
+  /** @type {Props} */
+  let {
+    button = true,
+    highlight = false,
+    icon = "",
+    iconSize = $bindable(24),
+    href = "",
+    rel = "",
+    text = "",
+    title = text,
+    target = "_parent",
+    iconPosition = "right",
+    fullwidth = false,
+    textSize = ""
+  } = $props();
 
   let currentIcon = icons[icon] || null;
   let hasIcon = !!currentIcon && icon !== "";

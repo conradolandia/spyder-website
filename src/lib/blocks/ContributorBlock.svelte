@@ -1,10 +1,21 @@
 <script>
   import ContributorCard from "$lib/components/ContributorCard.svelte";
 
-  export let title;
-  export let intro = "";
-  export let contributors;
-  export let size = "medium";
+  /**
+   * @typedef {Object} Props
+   * @property {any} title
+   * @property {string} [intro]
+   * @property {any} contributors
+   * @property {string} [size]
+   */
+
+  /** @type {Props} */
+  let {
+    title,
+    intro = "",
+    contributors,
+    size = "medium"
+  } = $props();
 
   // Define size-specific classes
   const containerSizeClass = {

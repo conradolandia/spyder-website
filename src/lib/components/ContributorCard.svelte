@@ -1,12 +1,20 @@
 <script>
+  import { run } from 'svelte/legacy';
+
   import { Icon } from "svelte-icons-pack";
   import { BsInfoCircle } from "svelte-icons-pack/bs";
 
   import { tooltip } from "svooltip";
   import "svooltip/styles.css";
 
-  export let contributor;
-  export let size = "medium";
+  /**
+   * @typedef {Object} Props
+   * @property {any} contributor
+   * @property {string} [size]
+   */
+
+  /** @type {Props} */
+  let { contributor, size = "medium" } = $props();
 
   // Function to generate HTML string from tooltip
   const generateTooltipHTML = (content) => `
@@ -26,18 +34,20 @@
     </div>
   `;
 
-  let tooltipHTML, tooltipOptions;
+  let tooltipHTML = $state(), tooltipOptions = $state();
 
-  $: if (contributor.tooltip) {
-    tooltipHTML = generateTooltipHTML(contributor.tooltip);
-    tooltipOptions = {
-      content: tooltipHTML,
-      placement: "bottom",
-      delay: [300, 300],
-      offset: 15,
-      html: true,
-    };
-  }
+  run(() => {
+    if (contributor.tooltip) {
+      tooltipHTML = generateTooltipHTML(contributor.tooltip);
+      tooltipOptions = {
+        content: tooltipHTML,
+        placement: "bottom",
+        delay: [300, 300],
+        offset: 15,
+        html: true,
+      };
+    }
+  });
 </script>
 
 <div

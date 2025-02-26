@@ -1,5 +1,6 @@
+<!-- Migrated from afterUpdate to Svelte 5 $effect -->
 <script>
-  import { onMount, afterUpdate } from "svelte";
+  import { onMount } from "svelte";
   import { browser } from "$app/environment";
   import { colourScheme } from "$lib/store";
 
@@ -20,7 +21,7 @@
     dark: 0xa39b6c,
   };
 
-  $: vantaOptions = {
+  const vantaOptions = $derived({
     color: getColor(fgColors, $colourScheme),
     backgroundColor: getColor(bgColors, $colourScheme),
     mouseControls: true,
@@ -31,7 +32,7 @@
     scale: 1.0,
     scaleMobile: 1.0,
     showLines: false,
-  };
+  });
 
   const initVanta = () => {
     if (vantaContainer && browser && window.VANTA) {
@@ -53,20 +54,15 @@
     }
   }
 
-  $: if (browser && vantaInstance && $colourScheme !== currentScheme) {
-    console.log("Color scheme changed, reinitializing Vanta");
-    initVanta();
-  }
-
-  onMount(() => {
-    if (browser) {
+  $effect(() => {
+    if (browser && vantaInstance && $colourScheme !== currentScheme) {
+      console.log("Effect triggered: Color scheme changed, reinitializing Vanta");
       initVanta();
     }
   });
 
-  afterUpdate(() => {
-    if (browser && vantaInstance && $colourScheme !== currentScheme) {
-      console.log("After update: Color scheme changed, reinitializing Vanta");
+  onMount(() => {
+    if (browser) {
       initVanta();
     }
   });

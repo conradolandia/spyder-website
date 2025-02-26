@@ -13,15 +13,20 @@
 
   import { siteUrl, ogImageBlog, config } from "$lib/config";
 
-  /** @type {import('./$types').PageData} */
-  export let data;
+  /**
+   * @typedef {Object} Props
+   * @property {import('./$types').PageData} data
+   * @property {any} pageNum
+   * @property {any} totalPages
+   */
 
-  export let pageNum, totalPages;
+  /** @type {Props} */
+  let { data, pageNum = $bindable(), totalPages = $bindable() } = $props();
 
-  let postsWithAuthor = [];
-  let site, socials, posts;
+  let postsWithAuthor = $state([]);
+  let site = $state(), socials = $state(), posts = $state();
 
-  $: {
+  $effect(() => {
     socials = config.site.socials;
     site = `@${socials.twitter.split("/").pop()}`;
 
@@ -59,7 +64,7 @@
         );
       })();
     }
-  }
+  });
 </script>
 
 <Metadata />

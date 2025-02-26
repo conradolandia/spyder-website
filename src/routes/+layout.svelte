@@ -5,6 +5,13 @@
   import Loader from "$lib/components/Loader.svelte";
 
   import "../app.css";
+  /**
+   * @typedef {Object} Props
+   * @property {import('svelte').Snippet} [children]
+   */
+
+  /** @type {Props} */
+  let { children } = $props();
 
   let loaded = false;
 </script>
@@ -21,7 +28,7 @@
   <div class="layout grid h-full">
     <Header />
     <main class="grid grid-flow-row gap-16 xl:gap-32">
-      <slot />
+      {@render children?.()}
     </main>
     <Footer />
   </div>

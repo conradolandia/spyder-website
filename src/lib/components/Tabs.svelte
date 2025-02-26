@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import { fade } from "svelte/transition";
   import { locale } from "svelte-i18n";
   import VideoPlayer from "./VideoPlayer.svelte";
@@ -21,24 +23,28 @@
     content: VideoContent | ImageContent | any;
   }
 
-  export let tabs: Tab[] = [];
-  export let defaultTab = 0;
+  interface Props {
+    tabs?: Tab[];
+    defaultTab?: number;
+  }
+
+  let { tabs = [], defaultTab = 0 }: Props = $props();
 
   // State
-  let current: Tab | undefined;
-  let currentIndex = defaultTab;
-  let tabsContainer: HTMLElement;
-  let tabsHeight = 0;
-  let isLoading = true;
-  let videoElement: HTMLElement;
+  let current: Tab | undefined = $state();
+  let currentIndex = $state(defaultTab);
+  let tabsContainer: HTMLElement = $state();
+  let tabsHeight = $state(0);
+  let isLoading = $state(true);
+  let videoElement: HTMLElement = $state();
 
   // Computed values
-  $: currentKey = current?.isVideo
+  let currentKey = $derived(current?.isVideo
     ? JSON.stringify(current.content) + $locale // Add locale to force update on language change
-    : current?.content;
+    : current?.content);
 
   // Reactive statements
-  $: {
+  run(() => {
     if (tabs.length) {
       // Preserve current tab index when language changes
       current = tabs[currentIndex];
@@ -46,19 +52,23 @@
       current = tabs[defaultTab];
       currentIndex = defaultTab;
     }
-  }
+  });
 
   // Update height when locale or tabs change
-  $: if (tabsContainer && ($locale || tabs)) {
-    requestAnimationFrame(() => {
-      tabsHeight = tabsContainer.offsetHeight;
-    });
-  }
+  run(() => {
+    if (tabsContainer && ($locale || tabs)) {
+      requestAnimationFrame(() => {
+        tabsHeight = tabsContainer.offsetHeight;
+      });
+    }
+  });
 
   // Set non-video content to loaded immediately
-  $: if (current && !current.isVideo) {
-    isLoading = false;
-  }
+  run(() => {
+    if (current && !current.isVideo) {
+      isLoading = false;
+    }
+  });
 
   // Event handlers
   function handleTabClick(tab: Tab, index: number) {
@@ -87,7 +97,7 @@
       class="tab-button pb-2 border-b-2 border-neutral-500 text-gray-500
              text-xs sm:text-sm lg:text-base font-light"
       class:selected={current === tab}
-      on:click={() => handleTabClick(tab, i)}
+      onclick={() => handleTabClick(tab, i)}
       aria-selected={current === tab}
       role="tab"
       id="tab-{i}"
@@ -137,7 +147,7 @@
     {:else}
       <div in:fade={{ duration: 200 }}>
         {#if typeof current.content !== "object"}
-          <svelte:component this={current.content} />
+          <current.content />
         {:else if current.content.imgSrc}
           <figure class="figure text-center">
             <img

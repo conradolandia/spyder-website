@@ -2,19 +2,37 @@
   import { colourScheme } from '$lib/store';
   import Loader from "./Loader.svelte";
 
-  export let imgSrc = "";
-  export let imgSrcDark = "";
-  export let imgAlt = "";
-  export let title = "";
-  export let blur = false;
-  export let shadow = false;
-  export let rounded = true;
-  export let contain = false;
-  export let figure = true;
-  export let classes = "";
-  export let caption = "";
+  /**
+   * @typedef {Object} Props
+   * @property {string} [imgSrc]
+   * @property {string} [imgSrcDark]
+   * @property {string} [imgAlt]
+   * @property {string} [title]
+   * @property {boolean} [blur]
+   * @property {boolean} [shadow]
+   * @property {boolean} [rounded]
+   * @property {boolean} [contain]
+   * @property {boolean} [figure]
+   * @property {string} [classes]
+   * @property {string} [caption]
+   */
 
-  $: currentImgSrc = $colourScheme === 'dark' && imgSrcDark ? imgSrcDark : imgSrc;
+  /** @type {Props} */
+  let {
+    imgSrc = "",
+    imgSrcDark = "",
+    imgAlt = "",
+    title = "",
+    blur = false,
+    shadow = false,
+    rounded = true,
+    contain = false,
+    figure = true,
+    classes = "",
+    caption = ""
+  } = $props();
+
+  let currentImgSrc = $derived($colourScheme === 'dark' && imgSrcDark ? imgSrcDark : imgSrc);
 </script>
 
 {#if currentImgSrc}
