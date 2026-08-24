@@ -19,9 +19,9 @@
   };
 
   const gridSizeClass = {
-    small: "grid grid-cols-1 grid-cols-8 sm:grid-cols-12 lg:grid-cols-23",
+    small: "grid grid-cols-8 sm:grid-cols-12 lg:grid-cols-23",
     medium: "flex flex-wrap sm:gap-6 lg:gap-8",
-    large: "grid grid-cols-1 sm:grid-cols-3 md:grid-cols-3 sm:gap-6 lg:gap-8"
+    large: "grid grid-cols-1 sm:grid-cols-3 sm:gap-6 lg:gap-8"
   };
 </script>
 
